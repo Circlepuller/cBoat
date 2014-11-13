@@ -27,6 +27,8 @@ void event_handler(irc_t *irc, char *command, char *prefix, char *args)
 	char *nick, *user, *host, *source, *text, *action;
 	irc_parse_prefix(irc, prefix, &nick, &user, &host);
 
+	// TODO: Parse args via upcoming array function array_split(array_t *, char *)
+
 	if (!strcmp(command, "PING")) {
 		irc_raw(irc, "PONG %s", args);
 	} else if (!strcmp(command, "PRIVMSG")) {
