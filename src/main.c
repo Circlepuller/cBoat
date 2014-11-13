@@ -41,8 +41,6 @@ void event_handler(irc_t *irc, char *command, char *prefix, char *args)
 				irc_privmsg(irc, source, text);
 			} else if (!strcmp(nick, "Circlepuller") && !strcmp(action, "!quit")) {
 				irc_quit(irc, strlen(text) ? text : "Goodbye...");
-			} else if (!strcmp(action, "!wantsomefuck")) {
-				irc_raw(irc, "PRIVMSG %s :%s wants to fuck!", source, nick);
 			}
 		}
 	} else if (!strcmp(command, "JOIN") && !strcmp(irc->nick, nick)) {
