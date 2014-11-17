@@ -95,8 +95,11 @@ void array_free(array_t *self)
 {
 	int i = 0;
 
-	while (i < self->length) free(self->items[i++]);
+	if (self->length) {
+		while (i < self->length) free(self->items[i++]);
+		
+		free(self->items);
+	}
 
-	free(self->items);
 	free(self);
 }

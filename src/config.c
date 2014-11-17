@@ -21,7 +21,7 @@ config_t *config_init(char *filename)
 	self->values = array_init(0, NULL);
 
 	if ((self->fp = fopen(filename, "r")) == NULL) {
-		free(self);
+		config_free(self);
 
 		return NULL;
 	}
