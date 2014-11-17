@@ -90,10 +90,10 @@ bool config_has_key(config_t *self, char *key)
 bool config_get_bool(config_t *self, char *key)
 {
 	char *keys[] = {"true", "yes"};
-	int i;
+	int i = 0;
 
 	// TODO: Number truths
-	for (i = 0; i < 2;) if (!strcmp(keys[i++], key)) return true;
+	while (i < 2) if (!strcmp(keys[i++], key)) return true;
 
 	return false;
 }

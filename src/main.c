@@ -13,6 +13,7 @@
 #include <time.h>
 
 #include <sys/socket.h>
+#include <unistd.h>
 
 #include <socket.h>
 #include <irc.h>
@@ -21,6 +22,14 @@
 #ifndef IRC_BUFLEN
 #error "IRC_BUFLEN must be defined"
 #endif
+
+const char *program_name;
+
+void die(const char *message)
+{
+	fprintf(stderr, "%s: error: %s\n", program_name, message);
+	exit(EXIT_FAILURE);
+}
 
 void event_handler(irc_t *irc, char *command, char *prefix, char *args)
 {
@@ -54,23 +63,50 @@ void event_handler(irc_t *irc, char *command, char *prefix, char *args)
 
 int main(int argc, char *argv[])
 {
-	config_t *config;
+	config_t *config = NULL;
 	irc_t *irc;
 	char *nick, *user, *real;
-	
-	if (argc != 2) {
-		printf("usage: %s [config file]\n", argv[0]);
-		exit(EXIT_FAILURE);
-	} 
-	
+	int c;
+
 	srand(time(NULL));
 
-	config = config_init(argv[1]);
-	nick = config_get_string(config, "nick");
-	user = config_get_string(config, "user");
-	real = config_get_string(config, "real");
-	irc = irc_init(!strcmp(config_get_string(config, "ssl"), "yes") ? true : false);
+	program_name = argv[0];
 
+	// getopt() functionality WIP
+	while ((c = getopt(argc, argv, "c:")) != -1)
+		switch (c) {
+			case 'c':
+				if ((config = config_init(optarg)) == NULL) die(strerror(errno));
+				break;
+
+			case 'n':
+				nick = optarg;
+				break;
+			case 'u':
+				user = optarg;
+				break;
+			case 'r':
+				real = optarg;
+				break;
+
+			default:
+				die("something in the option parser broke");
+		}
+	
+	if (config == NULL) {
+		die("a config must be supplied (for now) with option '-c'");
+	}
+
+	nick = config_has_key(config, "nick") ? config_get_string(config, "nick") : nick;
+	user = config_has_key(config, "user") ? config_get_string(config, "user") : user;
+	real = config_has_key(config, "real") ? config_get_string(config, "real") : real;
+
+	if ((irc = irc_init(config_has_key(config, "ssl") ? config_get_bool(config, "ssl") : false)) == NULL) {
+		config_free(config);
+		die(strerror(errno));
+	}
+
+	// TODO: Replace atoi() with a safer function
 	if (irc_connect(irc, config_get_string(config, "host"), atoi(config_get_string(config, "port")))) {
 		irc->hook = event_handler;
 
@@ -81,7 +117,9 @@ int main(int argc, char *argv[])
 		irc_loop(irc);
 		irc_close(irc);
 	} else {
-		fprintf(stderr, "%s: %s\n", argv[0], strerror(errno));
+		// TODO: Figure out what the program isn't freeing here on failure
+		irc_free(irc);
+		die(strerror(errno));
 	}
 
 	irc_free(irc);
