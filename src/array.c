@@ -22,6 +22,28 @@ array_t *array_init(int size, char *item)
 	return self;
 }
 
+int array_split(array_t *self, char *str, const char *delimiters, int len)
+{
+	char *item, *end = NULL;
+	int res = !len ? 0 : 1;
+
+	if (!len || len > 1) {
+		item = strtok_r(str, delimiters, &end);
+		res++;
+
+		while (item != NULL) {
+			array_append(self, item);
+
+			item = !len || res < len ? strtok_r(NULL, delimiters, &end) : NULL;
+			res++;
+		}
+	}
+
+	if (len) array_append(self, end == NULL ? str : end);
+
+	return res;
+}
+
 char *array_append(array_t *self, char *item)
 {
 	return array_insert(self, -1, item);

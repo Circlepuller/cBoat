@@ -33,27 +33,38 @@ void die(const char *message)
 
 void event_handler(irc_t *irc, char *command, char *prefix, char *args)
 {
+	array_t *params;
 	char *nick, *user, *host, *source, *text, *action;
+
 	irc_parse_prefix(irc, prefix, &nick, &user, &host);
 
-	// TODO: Parse args via upcoming array function array_split(array_t *, char *)
+	/**
+	 * 11/17/14: Implemented array_split(). Sorta wacky behavior - but it works for me. :s
+	 *           Next up - implement it elsewhere. Also, having it split by string instead
+	 *           of delimiters would be nice too.
+	 */
 
 	if (!strcmp(command, "PING")) {
 		irc_raw(irc, "PONG %s", args);
 	} else if (!strcmp(command, "PRIVMSG")) {
-		irc_parse_text(irc, args, &source, &text);
+		params = array_init(0, NULL);
 
-		action = strtok_r(NULL, " ", &text);
+		irc_parse_text(irc, args, &source, &text);
+		array_split(params, text, " ", 2);
+		
+		action = array_get(params, 0); //strtok_r(NULL, " ", &text);
 
 		if (!strcmp(action, "!dice")) {
 			irc_raw(irc, "PRIVMSG %s :%s rolled a %d!", strchr(source, '#') != NULL ? source : irc->nick, nick, (rand() % 6) + 1);
 		} else if (strchr(source, '#') != NULL && action != NULL) {
 			if (!strcmp(nick, "Circlepuller") && !strcmp(action, "!say")) {
-				irc_privmsg(irc, source, text);
+				irc_privmsg(irc, source, array_get(params, 1));
 			} else if (!strcmp(nick, "Circlepuller") && !strcmp(action, "!quit")) {
-				irc_quit(irc, strlen(text) ? text : "Goodbye...");
+				irc_quit(irc, strlen(array_get(params, 1)) ? array_get(params, 1) : "Goodbye...");
 			}
 		}
+
+		array_free(params);
 	} else if (!strcmp(command, "JOIN") && !strcmp(irc->nick, nick)) {
 		irc_parse_text(irc, args, &source, &text);
 
