@@ -3,6 +3,12 @@
  *
  * Made by Dan Saunders for cBoat
  */
+ 
+#if __STDC_VERSION__ >= 199901L
+#define _POSIX_C_SOURCE 200809L
+#else
+#error "__STDC_VERSION__ must be greater or equal to 199901L"
+#endif
 
 #include <stdio.h>
 #include <stdlib.h>

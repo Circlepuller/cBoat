@@ -4,6 +4,12 @@
  * Made by Dan Saunders for cBoat
  */
 
+#if __STDC_VERSION__ >= 199901L
+#define _POSIX_C_SOURCE 200809L
+#else
+#error "__STDC_VERSION__ must be greater or equal to 199901L"
+#endif
+
 #include <errno.h>
 #include <stdarg.h>
 #include <stdbool.h>
@@ -28,7 +34,7 @@ irc_t *irc_init(bool use_ssl)
 		return self;
 	}
 
-	free(self);
+	irc_free(self);
 
 	return NULL;
 }

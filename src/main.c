@@ -5,6 +5,12 @@
  * An IRC bot written in C
  */
 
+#if __STDC_VERSION__ >= 199901L
+#define _POSIX_C_SOURCE 200809L
+#else
+#error "__STDC_VERSION__ must be greater or equal to 199901L"
+#endif
+
 #include <errno.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -40,8 +46,7 @@ void event_handler(irc_t *irc, char *command, char *prefix, char *args)
 
 	/**
 	 * 11/17/14: Implemented array_split(). Sorta wacky behavior - but it works for me. :s
-	 *           Next up - implement it elsewhere. Also, having it split by string instead
-	 *           of delimiters would be nice too.
+	 *           Next up - implement it elsewhere.
 	 */
 
 	if (!strcmp(command, "PING")) {
@@ -52,7 +57,7 @@ void event_handler(irc_t *irc, char *command, char *prefix, char *args)
 		irc_parse_text(irc, args, &source, &text);
 		array_split(params, text, " ", 2);
 		
-		action = array_get(params, 0); //strtok_r(NULL, " ", &text);
+		action = array_get(params, 0);
 
 		if (!strcmp(action, "!dice")) {
 			irc_raw(irc, "PRIVMSG %s :%s rolled a %d!", strchr(source, '#') != NULL ? source : irc->nick, nick, (rand() % 6) + 1);
@@ -76,10 +81,14 @@ int main(int argc, char *argv[])
 {
 	config_t *config = NULL;
 	irc_t *irc;
-	char *nick, *user, *real;
 	int c;
+	char *nick = NULL,
+		 *user = NULL,
+		 *real = NULL;
 
 	srand(time(NULL));
+
+	printf("%li\n", __STDC_VERSION__);
 
 	program_name = argv[0];
 

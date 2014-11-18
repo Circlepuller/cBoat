@@ -4,6 +4,12 @@
  * Made by Dan Saunders for cBoat
  */
 
+#if __STDC_VERSION__ >= 199901L
+#define _POSIX_C_SOURCE 200809L
+#else
+#error "__STDC_VERSION__ must be greater or equal to 199901L"
+#endif
+
 #include <ctype.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -67,7 +73,7 @@ void config_parse_line(config_t *self, char *line)
 	int i;
 	char *key, *value;
 
-	if (line[0] == ';' || line[0] == '#' || !isgraph(line[0])) return;
+	if (line == NULL || line[0] == ';' || line[0] == '#' || !isgraph(line[0])) return;
 	if (!strchr(line, '=')) return;
 
 	// I'll add debug stuff here soon

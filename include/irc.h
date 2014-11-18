@@ -7,6 +7,7 @@
 #include <stdbool.h>
 
 #include <socket.h>
+#include <config.h>
 
 #ifndef IRC_H_
 #define IRC_H_
