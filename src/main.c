@@ -29,9 +29,9 @@
 #error "IRC_BUFLEN must be defined"
 #endif
 
-const char *program_name;
+char const *program_name;
 
-void die(const char *message)
+void die(char const *message)
 {
 	fprintf(stderr, "%s: error: %s\n", program_name, message);
 	exit(EXIT_FAILURE);
@@ -64,9 +64,9 @@ void event_handler(irc_t *irc, char *command, char *prefix, char *args)
 		} else if (strchr(source, '#') != NULL && action != NULL) {
 			if (!strcmp(nick, "Circlepuller") && !strcmp(action, "!say")) {
 				irc_privmsg(irc, source, array_get(params, 1));
-			} else if (!strcmp(nick, "Circlepuller") && !strcmp(action, "!quit")) {
-				irc_quit(irc, strlen(array_get(params, 1)) ? array_get(params, 1) : "Goodbye...");
 			}
+		} else if (!strcmp(nick, "Circlepuller") && !strcmp(action, "!quit")) {
+			irc_quit(irc, strlen(array_get(params, 1)) ? array_get(params, 1) : "Goodbye...");
 		}
 
 		array_free(params);
@@ -77,7 +77,7 @@ void event_handler(irc_t *irc, char *command, char *prefix, char *args)
 	}
 }
 
-int main(int argc, char *argv[])
+int const main(int const argc, char *const *argv)
 {
 	config_t *config = NULL;
 	irc_t *irc;
@@ -87,8 +87,6 @@ int main(int argc, char *argv[])
 		 *real = NULL;
 
 	srand(time(NULL));
-
-	printf("%li\n", __STDC_VERSION__);
 
 	program_name = argv[0];
 

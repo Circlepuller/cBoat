@@ -84,7 +84,7 @@ bool socket_connect(socket_t *self, char *host, int port)
 char *socket_read(socket_t *self, size_t len)
 {
 	int res, end;
-	char *buf = malloc((len + 1) * sizeof(char));
+	char *buf = calloc(len + 1, sizeof(char));
 
 #if SOCKET_SSL
 	if (self->using_ssl) {
@@ -99,10 +99,6 @@ char *socket_read(socket_t *self, size_t len)
 #endif
 
 	if (res) {
-		buf[end] = 0;
-
-		buf = realloc(buf, (strlen(buf) + 1) * sizeof(char));
-
 		return buf;
 	}
 	

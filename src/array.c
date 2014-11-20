@@ -28,7 +28,7 @@ array_t *array_init(int size, char *item)
 	return self;
 }
 
-int array_split(array_t *self, char *str, const char *delimiters, int len)
+int array_split(array_t *self, char *str, char const *delimiters, int len)
 {
 	char *item, *end = NULL;
 	int res = !len ? 0 : 1;
@@ -50,7 +50,7 @@ int array_split(array_t *self, char *str, const char *delimiters, int len)
 	return res;
 }
 
-char *array_append(array_t *self, char *item)
+inline char *array_append(array_t *self, char *item)
 {
 	return array_insert(self, -1, item);
 }
@@ -66,13 +66,9 @@ int array_index(array_t *self, char *item)
 	return -1;
 }
 
-char *array_get(array_t *self, int i)
+inline char *array_get(array_t *self, int i)
 {
-	if (i < self->length) {
-		return self->items[i < 0 ? self->length + i : i];
-	} else {
-		return NULL;
-	}
+	return i < self->length ? self->items[i < 0 ? self->length + i : i] : NULL;
 }
 
 char *array_insert(array_t *self, int i, char *item)

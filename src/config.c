@@ -5,7 +5,7 @@
  */
 
 #if __STDC_VERSION__ >= 199901L
-#define _POSIX_C_SOURCE 200809L
+#define _POSIX_C_SOURCE 200101L
 #else
 #error "__STDC_VERSION__ must be greater or equal to 199901L"
 #endif
@@ -88,7 +88,7 @@ void config_parse_line(config_t *self, char *line)
 	array_append(self->values, value);
 }
 
-bool config_has_key(config_t *self, char *key)
+inline bool config_has_key(config_t *self, char *key)
 {
 	return array_index(self->keys, key) > -1;
 }

@@ -5,7 +5,7 @@
  */
 
 #if __STDC_VERSION__ >= 199901L
-#define _POSIX_C_SOURCE 200809L
+#define _POSIX_C_SOURCE 200101L
 #else
 #error "__STDC_VERSION__ must be greater or equal to 199901L"
 #endif
@@ -50,7 +50,7 @@ bool irc_connect(irc_t *self, char *host, int port)
 
 bool irc_raw(irc_t *self, const char *format, ...)
 {
-	char *buf = malloc(IRC_BUFLEN * sizeof(char));
+	char *buf = calloc(IRC_BUFLEN, sizeof(char));
 	bool res;
 	va_list args;
 
@@ -58,13 +58,12 @@ bool irc_raw(irc_t *self, const char *format, ...)
 	vsprintf(buf, format, args);
 	va_end(args);
 
-	buf = realloc(buf, (strlen(buf) + 1) * sizeof(char));
+	buf = realloc(buf, (strlen(buf) + 3) * sizeof(char));
+
 
 #ifdef IRC_DEBUG
 	printf("<- %s\n", buf);
 #endif
-
-	buf = realloc(buf, (strlen(buf) + 3) * sizeof(char));
 
 	strcat(buf, "\r\n");
 
@@ -105,39 +104,39 @@ bool irc_close(irc_t *self)
 	return socket_close(self->sock);
 }
 
-bool irc_pass(irc_t *self, char *pass)
+inline bool irc_pass(irc_t *self, char *pass)
 {
 	return irc_raw(self, "PASS %s", pass);
 }
 
-bool irc_nick(irc_t *self, char *nick)
+inline bool irc_nick(irc_t *self, char *nick)
 {
 	self->nick = nick;
 
 	return irc_raw(self, "NICK %s", nick);
 }
 
-bool irc_user(irc_t *self, char *user, short mode, char *realname)
+inline bool irc_user(irc_t *self, char *user, short mode, char *realname)
 {
 	return irc_raw(self, "USER %s %d * :%s", user, mode, realname);
 }
 
-bool irc_oper(irc_t *self, char *name, char *password)
+inline bool irc_oper(irc_t *self, char *name, char *password)
 {
 	return irc_raw(self, "OPER %s %s", name, password);
 }
 
-bool irc_quit(irc_t *self, char *message)
+inline bool irc_quit(irc_t *self, char *message)
 {
 	return irc_raw(self, "QUIT :%s", message);
 }
 
-bool irc_join(irc_t *self, char*channels)
+inline bool irc_join(irc_t *self, char*channels)
 {
 	return irc_raw(self, "JOIN %s", channels);
 }
 
-bool irc_privmsg(irc_t *self, char *channels, char *msg)
+inline bool irc_privmsg(irc_t *self, char *channels, char *msg)
 {
 	return irc_raw(self, "PRIVMSG %s :%s", channels, msg);
 }
@@ -146,9 +145,9 @@ void irc_loop(irc_t *self)
 {
 	int i = 0;
 	char *c,
-		 *buf = malloc((IRC_BUFLEN + 1) * sizeof(char));
+		 *buf = calloc(IRC_BUFLEN + 1, sizeof(char));
 
-	memset(buf, 0, (IRC_BUFLEN + 1) * sizeof(char));
+	//memset(buf, 0, (IRC_BUFLEN + 1) * sizeof(char));
 
 	while ((c = socket_read(self->sock, 1)) != NULL && errno != 512 && strlen(c)) {
 		if (!strcmp(c, "\r") && i) {
