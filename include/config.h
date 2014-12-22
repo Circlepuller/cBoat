@@ -17,7 +17,7 @@ typedef struct {
 	array_t *values;
 } config_t;
 
-config_t *config_init(char *);
+config_t *config_init(char const *);
 void config_parse_file(config_t *);
 void config_parse_line(config_t *, char *);
 bool config_has_key(config_t *, char *);

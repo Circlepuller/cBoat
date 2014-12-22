@@ -58,7 +58,7 @@ bool irc_raw(irc_t *self, const char *format, ...)
 	vsprintf(buf, format, args);
 	va_end(args);
 
-	buf = realloc(buf, (strlen(buf) + 3) * sizeof(char));
+	buf = realloc(buf, (strlen(buf) + 4) * sizeof(char));
 
 
 #ifdef IRC_DEBUG
@@ -147,14 +147,9 @@ void irc_loop(irc_t *self)
 	char *c,
 		 *buf = calloc(IRC_BUFLEN + 1, sizeof(char));
 
-	//memset(buf, 0, (IRC_BUFLEN + 1) * sizeof(char));
-
 	while ((c = socket_read(self->sock, 1)) != NULL && errno != 512 && strlen(c)) {
 		if (!strcmp(c, "\r") && i) {
-			buf[i++] = 0;
-			buf = realloc(buf, i * sizeof(char));
 			irc_parse_command(self, buf);
-			buf = realloc(buf, (IRC_BUFLEN + 1) * sizeof(char));
 			memset(buf, 0, (IRC_BUFLEN + 1) * sizeof(char));
 			i = 0;
 		} else if (strcmp(c, "\n")) {

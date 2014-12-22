@@ -19,7 +19,7 @@
 #include <array.h>
 #include <config.h>
 
-config_t *config_init(char *filename)
+config_t *config_init(char const *filename)
 {
 	config_t *self = (config_t *)malloc(sizeof(config_t));
 
@@ -95,7 +95,7 @@ inline bool config_has_key(config_t *self, char *key)
 
 bool config_get_bool(config_t *self, char *key)
 {
-	char *keys[] = {"true", "yes"};
+	char const *keys[] = {"true", "yes"};
 	int i = 0;
 
 	// TODO: Number truths
