@@ -19,14 +19,16 @@
 
 #include <sys/socket.h>
 
+#include <config.h>
 #include <socket.h>
 #include <irc.h>
 
-irc_t *irc_init(bool use_ssl)
+irc_t *irc_init(config_t *conf)
 {
 	irc_t *self = (irc_t *)malloc(sizeof(irc_t));
 
-	self->sock = socket_init(AF_INET, SOCK_STREAM, use_ssl);
+	self->conf = conf;
+	self->sock = socket_init(AF_INET, SOCK_STREAM, config_has_key(self->conf, "ssl") ? config_get_bool(self->conf, "ssl") : false);
 
 	self->hook = NULL;
 
@@ -48,7 +50,7 @@ bool irc_connect(irc_t *self, char *host, int port)
 	return socket_connect(self->sock, host, port);
 }
 
-bool irc_raw(irc_t *self, const char *format, ...)
+bool irc_raw(irc_t *self, char const *format, ...)
 {
 	char *buf = calloc(IRC_BUFLEN, sizeof(char));
 	bool res;

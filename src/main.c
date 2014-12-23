@@ -119,7 +119,7 @@ int const main(int const argc, char *const *argv)
 	user = config_has_key(config, "user") ? config_get_string(config, "user") : user;
 	real = config_has_key(config, "real") ? config_get_string(config, "real") : real;
 
-	if ((irc = irc_init(config_has_key(config, "ssl") ? config_get_bool(config, "ssl") : false)) == NULL) {
+	if ((irc = irc_init(config)) == NULL) {
 		config_free(config);
 		die(strerror(errno));
 	}

@@ -14,14 +14,15 @@
 
 typedef struct irc_ {
 	socket_t *sock;
+	config_t *conf;
 	char *nick;
 
 	void (*hook)(struct irc_ *, char *, char *, char *);
 } irc_t;
 
-irc_t *irc_init(bool);
+irc_t *irc_init(config_t *);
 bool irc_connect(irc_t *, char *, int);
-bool irc_raw(irc_t *, const char *, ...);
+bool irc_raw(irc_t *, char const *, ...);
 bool irc_close(irc_t *);
 bool irc_pass(irc_t *, char *);
 bool irc_nick(irc_t *, char *);
