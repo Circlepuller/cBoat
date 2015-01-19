@@ -62,7 +62,6 @@ bool irc_raw(irc_t *self, char const *format, ...)
 
 	buf = realloc(buf, (strlen(buf) + 4) * sizeof(char));
 
-
 #ifdef IRC_DEBUG
 	printf("<- %s\n", buf);
 #endif
